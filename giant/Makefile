@@ -41,26 +41,23 @@ obj/gia_main.o: src/gia_main.c inc/giant.h
 
 ##############################
 # GIA_MESH.O
-obj/gia_mesh.o: src/gia_mesh.c inc/gmsh_ops.h inc/list.h ~/libs/parmetis-4.0.3/include/parmetis.h
-	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $<       \
-	-I./inc                                      \
-	-I../../../libs/parmetis-4.0.3/include       \
-	-I../../../libs/parmetis-4.0.3/metis/include 
+obj/gia_mesh.o: src/gia_mesh.c inc/gmsh_ops.h inc/list.h \
+                ~/libs/parmetis-4.0.3/include/parmetis.h \
+                ~/libs/parmetis-4.0.3/metis/include/metis.h
+	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $< 	-I./inc -I../../../libs/parmetis-4.0.3/include -I../../../libs/parmetis-4.0.3/metis/include 
 
 
 ##############################
 # LIST.O
 obj/list.o: src/list.c inc/list.h 
-	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $<       \
-	-I./inc
+	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $< 	-I./inc
 
 
 
 ##############################
 # GMSH_OPS.O
 obj/gmsh_ops.o: src/gmsh_ops.c inc/list.h inc/gmsh_ops.h
-	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $<       \
-	-I./inc
+	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $< -I./inc
 
 
 var:

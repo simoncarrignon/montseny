@@ -24,18 +24,30 @@ int main(int argc, char **args)
     /* read options from command line */
     //    
     // couple flag ( 1:coupled 0:not coupled) -> -c 1
+    //
     ierr = PetscOptionsGetBool(NULL,NULL,"-c",&couple_fl,&set);CHKERRQ(ierr);
+    if(set == PETSC_FALSE){
+	couple_fl = PETSC_FALSE;
+    }
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"coupling : %d\n",couple_fl);CHKERRQ(ierr);
+    //
     // mesh file format  -> -mfor gmsh
+    //
     ierr = PetscOptionsGetString(NULL,NULL,"-mfor",mesh_f,16,&set);CHKERRQ(ierr);
-    // mesh file name    -> -mesh guido.msh
+    if(set == PETSC_FALSE){
+	strcpy(mesh_f,"gmsh");
+    }
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"mesh format : %s\n",mesh_f);CHKERRQ(ierr);
+    //
+    // mesh file name    -> -mesh rve/cube_unif/cube.msh
+    //
     ierr = PetscOptionsGetString(NULL,NULL,"-mesh",mesh_n,16,&set);CHKERRQ(ierr);
+    if(set == PETSC_FALSE){
+	strcpy(mesh_f,"rve/cube_unif/cube.msh");
+    }
     //
 
     ierr = gia_rmsh(mesh_n, mesh_f);
-
-    if(couple_fl == PETSC_FALSE)
-	ierr = PetscPrintf(PETSC_COMM_WORLD,"STARTING GIANT CODE\n");CHKERRQ(ierr);
-	
 
     ierr = PetscFinalize();
 
