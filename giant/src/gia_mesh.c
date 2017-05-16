@@ -54,7 +54,8 @@ int gia_readev_gmsh(char *mesh_n)
     FILE   * fm;
     int      n_elem_tot;
     int      total;
-    int      i;
+    int      resto;
+    int      i,d;
     
     char     buf[128];   
     char   * data;
@@ -92,8 +93,59 @@ int gia_readev_gmsh(char *mesh_n)
 		if(atoi(data) == 4 || atoi(data) == 5 || atoi(data) == 6) n_elem_tot ++;
 	    }
 	    ierr = PetscPrintf(PETSC_COMM_WORLD,"n_elem_tot  : %d\n",n_elem_tot);CHKERRQ(ierr);
+	    break;
 	}
     }
+    rewind(fm);
+
+    //
+    //  armamos el vector vtxdist -> P0 tiene sus elementos entre vtxdist[0] a vtxdist[1]
+    //
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"vtxdist     : ");CHKERRQ(ierr);
+    vtxdist = (int*)calloc( nproc + 1 ,sizeof(int));
+    resto = n_elem_tot % nproc;
+    d = 1;
+    for(i=0; i < nproc + 1; i++){
+	vtxdist[i] = i * n_elem_tot / nproc + d - 1;
+	ierr = PetscPrintf(PETSC_COMM_WORLD,"%d ",vtxdist[i]);CHKERRQ(ierr);
+	if(i == resto - 1) d = 0;
+    }
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"\n");CHKERRQ(ierr);
+    
+
+    //
+    // repetimos el proceso pero esta vez leemos los nodos 
+    // y completamos los vectores 
+    //
+    while(fgets(buf,128,fm)!=NULL){
+	data=strtok(buf," \n");
+	//
+	// leemos hasta encontrar $Elements
+	//
+	if(strcmp(data,"$Elements")==0){
+	    //
+	    // leemos el numero total pero no lo usamos (incluye elementos de superficie
+	    // y de volumen
+	    //
+	    fgets(buf,128,fm);
+	    data  = strtok(buf," \n");
+	    total = atoi(data);
+
+	    //
+	    // leemos hasta $EndElements
+	    // y contamos el numero total de los de volumen
+	    //
+	    for(i=0; i<total; i++){
+	        fgets(buf,128,fm); 
+		data=strtok(buf," \n");
+		data=strtok(NULL," \n");
+		if(atoi(data) == 4 || atoi(data) == 5 || atoi(data) == 6) n_elem_tot ++;
+	    }
+	    ierr = PetscPrintf(PETSC_COMM_WORLD,"n_elem_tot  : %d\n",n_elem_tot);CHKERRQ(ierr);
+	    break;
+	}
+    }
+    rewind(fm);
 
     return 0;   
 }
