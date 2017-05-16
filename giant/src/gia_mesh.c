@@ -53,6 +53,8 @@ int gia_readev_gmsh(char *mesh_n)
 
     FILE   * fm;
     int      n_elem_tot;
+    int      total;
+    int      i;
     
     char     buf[128];   
     char   * data;
@@ -75,21 +77,23 @@ int gia_readev_gmsh(char *mesh_n)
 	    // leemos el numero total pero no lo usamos (incluye elementos de superficie
 	    // y de volumen
 	    //
-	    if(fgets(buf,128,fm) == NULL) return 1;
+	    fgets(buf,128,fm);
+	    data  = strtok(buf," \n");
+	    total = atoi(data);
+
 	    //
 	    // leemos hasta $EndElements
 	    // y contamos el numero total de los de volumen
 	    //
-	    while( fgets(buf,128,fm) != NULL){
+	    for(i=0; i<total; i++){
+	        fgets(buf,128,fm); 
 		data=strtok(buf," \n");
 		data=strtok(NULL," \n");
 		if(atoi(data) == 4 || atoi(data) == 5 || atoi(data) == 6) n_elem_tot ++;
 	    }
-	}else if(strcmp(data,"$EndElements")==0){
-	    rewind(fm);    
+	    ierr = PetscPrintf(PETSC_COMM_WORLD,"n_elem_tot  : %d\n",n_elem_tot);CHKERRQ(ierr);
 	}
     }
-
 
     return 0;   
 }

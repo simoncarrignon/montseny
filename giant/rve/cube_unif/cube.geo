@@ -1,5 +1,5 @@
 lc=0.5;
-N = 100;
+N = 101;
 
 Point(1) = {-lc,-lc,-lc,0.1};
 Point(2) = {lc,-lc,-lc,0.1};
@@ -23,7 +23,7 @@ Physical Point("P100") = {2};
 Physical Point("P010") = {4};
 
 vol[]=Extrude {0, 0, 2*lc} {
-  Surface{6};Layers{N + 1};Recombine;
+  Surface{6};Layers{N - 1};Recombine;
 };
 
 Physical Volume("MAT") = {vol[1]};
