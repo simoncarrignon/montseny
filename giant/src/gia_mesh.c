@@ -100,6 +100,8 @@ int gia_readev_gmsh(char *mesh_n)
 
     //
     //  armamos el vector vtxdist -> P0 tiene sus elementos entre vtxdist[0] a vtxdist[1]
+    //  los elmentos que sobran a la divicion n_elem_tot / nproc los repartimos uno por 
+    //  uno entre los primeros procesos
     //
     ierr = PetscPrintf(PETSC_COMM_WORLD,"vtxdist     : ");CHKERRQ(ierr);
     vtxdist = (int*)calloc( nproc + 1 ,sizeof(int));
