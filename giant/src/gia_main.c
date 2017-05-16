@@ -21,6 +21,10 @@ int main(int argc, char **args)
 
     ierr = PetscInitialize(&argc,&args,(char*)0,help);
 
+    ierr = MPI_Comm_size(PETSC_COMM_WORLD,&nproc);CHKERRQ(ierr);
+    ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    ierr = PetscPrintf(PETSC_COMM_WORLD,"processors  : %d\n",nproc);CHKERRQ(ierr);
+
     // read options from command line 
     //    
     // couple flag ( 1:coupled 0:not coupled) -> -c 1
@@ -30,6 +34,7 @@ int main(int argc, char **args)
 	couple_fl = PETSC_FALSE;
     }
     ierr = PetscPrintf(PETSC_COMM_WORLD,"coupling    : %d\n",couple_fl);CHKERRQ(ierr);
+
     //
     // mesh file format  -> -mfor gmsh
     //
@@ -38,6 +43,7 @@ int main(int argc, char **args)
 	strcpy(mesh_f,"gmsh");
     }
     ierr = PetscPrintf(PETSC_COMM_WORLD,"mesh format : %s\n",mesh_f);CHKERRQ(ierr);
+
     //
     // mesh file name    -> -mesh rve/cube_unif/cube.msh
     //
@@ -46,7 +52,7 @@ int main(int argc, char **args)
 	strcpy(mesh_n,"rve/cube_unif/cube.msh");
     }
     ierr = PetscPrintf(PETSC_COMM_WORLD,"mesh file   : %s\n",mesh_n);CHKERRQ(ierr);
-    //
+
 
     // read mesh
     //    
