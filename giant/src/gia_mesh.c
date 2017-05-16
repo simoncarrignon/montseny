@@ -5,6 +5,7 @@
 
 
 #include "parmetis.h"
+#include "gmsh_ops.h"
 
 int gia_part(void)
 {
@@ -21,7 +22,7 @@ int gia_part(void)
     return 0;
 }
 
-int gia_rmsh(void)
+int gia_rmsh(char *mesh_n, char *mesh_f)
 {
     /*
        Reads the mesh according to the format specified
