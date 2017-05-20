@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     int       rank_n;
     int       size;
     int       color;
+    int       flag;
     MPI_Comm  world, intercomm, newcomm; 
 
     world = MPI_COMM_WORLD;
@@ -25,39 +26,29 @@ int main(int argc, char **argv)
 
     color = (rank % 2 == 0) ? MACRO:MICRO;
 
-    if(rank==0) printf("the size of the communicator is %d \n",size);
-   
     MPI_Comm_split(world, color, 0, &newcomm);
-
     MPI_Comm_size(newcomm, &size);
     MPI_Comm_rank(newcomm, &rank_n);
 
-    MPI_Barrier(world);
-   
+    printf("world rank %d and new rank %d I belong to %s\n",rank,rank_n,(color==0)?"MACRO":"MICRO");
+
     if(color == MACRO){
 	MPI_Intercomm_create(newcomm, 0, world, 1, 0, &intercomm);
     }else if(color == MICRO){
 	MPI_Intercomm_create(newcomm, 0, world, 0, 0, &intercomm);
     }
+    // local_comm, local_leader, peer_comm, remote_leader, tag, *newintercomm
+
+    MPI_Comm_test_inter(intercomm, &flag);
+    MPI_Comm_remote_size(intercomm, &size);
+
+    printf("world rank = %d intercomm flag = %d size = %d\n",rank,flag,size);
 
     if(color == MACRO){
-
 	solve_macro(newcomm, intercomm);
-
     }else{
-	
 	solve_micro(newcomm, intercomm);
-
     }
-
-    MPI_Barrier(world);
-
-    MPI_Comm_size(intercomm, &size);
-//    if(rank==0) printf("the size of the inter-communicator is %d \n",size);
-    printf("my rank is %d and the size of the inter-communicator is %d \n",rank,size);
-
-    MPI_Barrier(world);
-    printf("I was rank %d and now I am rank %d I belong to %s\n",rank,rank_n,(color==0)?"MACRO":"MICRO");
 
     MPI_Finalize();
 
