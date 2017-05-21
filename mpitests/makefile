@@ -1,4 +1,4 @@
-EXECS=main
+EXECS=main macro micro
 MPICC?=mpicc
 
 all: ${EXECS}
